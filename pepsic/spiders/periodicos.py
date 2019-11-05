@@ -4,6 +4,7 @@ import csv
 
 class PeriodicosSpider(scrapy.Spider):
 
+    csv_file_name = 'data\\periodicos.csv'
     name = 'periodicos'
     start_urls = ['http://pepsic.bvsalud.org/scielo.php?script=sci_alphabetic&lng=pt&nrm=iso']
 
@@ -12,17 +13,16 @@ class PeriodicosSpider(scrapy.Spider):
 
         periodico = response.meta['periodico']
 
-        csv_file_name = 'data\\periodicos.csv'
-        with open(csv_file_name, mode='a', newline='') as csv_file:
+        with open(self.csv_file_name, mode='a', newline='') as csv_file:
             csv_file_writer = csv.writer(csv_file, delimiter=',')
             info = [
-                periodico[0],
-                periodico[1],
-                periodico[2],
-                periodico[3],
-                journalInfo.css('strong.journalTitle::text').get(),
-                journalInfo.css('span.issn::text').get(),
-                journalInfo.css('p font::text').get(),
+                periodico[0], #pid
+                periodico[1], #link
+                periodico[2], #nome
+                periodico[3], #numeros
+                journalInfo.css('strong.journalTitle::text').get(), #publicador
+                journalInfo.css('span.issn::text').get(), #issn
+                journalInfo.css('p font::text').get(), #descricao
             ]
             csv_file_writer.writerow(info)
 
@@ -49,13 +49,26 @@ class PeriodicosSpider(scrapy.Spider):
         #yield numeros_issn
 
     def parse(self, response):
+        with open(self.csv_file_name, mode='w', newline='') as csv_file:
+            csv_file_writer = csv.writer(csv_file, delimiter=',')
+            info = [
+                'pid',
+                'link',
+                'nome',
+                'numeros',
+                'publicador',
+                'issn',
+                'descricao',
+            ]
+            csv_file_writer.writerow(info)
+
         for periodico in response.css('li font.linkado'):
             #periodico = response.css('li font.linkado')[0]
             link = periodico.css('a').attrib['href']
             link_periodicos = link.replace("script=sci_serial", "script=sci_issues")
 
-            likParams  = dict((x.strip(), y.strip()) for x, y in (element.split('=') for element in link.split('&'))) 
-            pid = likParams['pid']
+            lik_params  = dict((x.strip(), y.strip()) for x, y in (element.split('=') for element in link.split('&'))) 
+            pid = lik_params['pid']
 
             peri = [
                 pid,
@@ -64,6 +77,6 @@ class PeriodicosSpider(scrapy.Spider):
                 ' '.join(filter(str.isdigit, periodico.css('font::text').get().replace("-","").split())),
             ]
 
-            yield scrapy.Request(link_periodicos, meta={'pid':pid}, callback=self.parse_numeros)
+            #yield scrapy.Request(link_periodicos, meta={'pid':pid}, callback=self.parse_numeros)
             yield scrapy.Request(link, meta={'periodico': peri}, callback=self.parse_info)
 
