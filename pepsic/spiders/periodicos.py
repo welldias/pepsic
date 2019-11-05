@@ -77,6 +77,6 @@ class PeriodicosSpider(scrapy.Spider):
                 ' '.join(filter(str.isdigit, periodico.css('font::text').get().replace("-","").split())),
             ]
 
-            #yield scrapy.Request(link_periodicos, meta={'pid':pid}, callback=self.parse_numeros)
+            yield scrapy.Request(link_periodicos, meta={'pid':pid}, callback=self.parse_numeros)
             yield scrapy.Request(link, meta={'periodico': peri}, callback=self.parse_info)
 
