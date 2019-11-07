@@ -7,7 +7,5 @@
 
 import scrapy
 
-
 class PepsicItem(scrapy.Item):
-    file_urls = scrapy.Field()
-    files = scrapy.Field()
+    pass

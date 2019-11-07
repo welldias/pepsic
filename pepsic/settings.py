@@ -64,11 +64,10 @@ DOWNLOAD_DELAY = 1
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = { 
-    'scrapy.pipelines.files.FilesPipeline': 1 
-}
-
-FILES_STORE = 'D:/projetos/pepsic/data/files'
+#ITEM_PIPELINES = { 
+#    'scrapy.pipelines.files.FilesPipeline': 1 
+#}
+#FILES_STORE = 'D:/projetos/pepsic/data/files'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
