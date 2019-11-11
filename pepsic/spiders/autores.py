@@ -2,19 +2,19 @@
 import scrapy
 
 class ArtigosSpider(scrapy.Spider):
-    name = 'artigos'
+    name = 'autores'
     start_urls = ['http://pepsic.bvsalud.org/cgi-bin/wxis.exe/iah/?IsisScript=iah/iah.xis&base=article^dlibrary&index=AU&fmt=iso.pft&lang=p']
-    first_name = None
+    author_name = None
     file_csv = None
 
     def print_authors(self, response):
         for nome in response.xpath('//select/option'):
-            self.first_name = nome.attrib['value']
+            self.author_name = nome.attrib['value']
             self.file_csv.write(nome.attrib['value'])
             self.file_csv.write('\n')
 
     def parse(self, response):
-        self.first_name = 'MARIA CLOTILDE ROSSETTI' #response.css('input[type="submit"]::attr(value)').extract_first()
+        self.author_name = 'MARIA CLOTILDE ROSSETTI' #response.css('input[type="submit"]::attr(value)').extract_first()
         self.file_csv = open('data\\autors.csv', 'w')
 
         while True:                  
@@ -52,7 +52,7 @@ class ArtigosSpider(scrapy.Spider):
                 'nextAction':response.css('input[name="nextAction"]::attr(value)').extract_first(),
                 'indexRoot':[
                     '',
-                    self.first_name,
+                    self.author_name,
                     ''
                 ]
             }
@@ -61,6 +61,3 @@ class ArtigosSpider(scrapy.Spider):
                 callback=self.print_authors, 
                 method='POST', 
                 formdata=params)
-        
-
-
